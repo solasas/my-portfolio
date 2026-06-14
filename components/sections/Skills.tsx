@@ -26,8 +26,13 @@ export default function Skills() {
   const [newCatName, setNewCatName] = useState('');
 
   useEffect(() => {
-    const raw = localStorage.getItem(STORE_KEY);
-    if (raw) try { setCats(JSON.parse(raw)); } catch {}
+    const load = () => {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) try { setCats(JSON.parse(raw)); } catch {}
+    };
+    load();
+    window.addEventListener('portfolio-content-loaded', load);
+    return () => window.removeEventListener('portfolio-content-loaded', load);
   }, []);
 
   const persist = (updated: SkillCat[]) => {

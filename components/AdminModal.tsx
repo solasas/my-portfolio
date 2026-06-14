@@ -28,7 +28,7 @@ export default function AdminModal() {
 
   const submit = () => {
     if (pw === ADMIN_PASSWORD) {
-      enterAdmin();
+      enterAdmin(pw);
       close();
     } else {
       setError(true);

@@ -6,6 +6,7 @@ import { useAdmin } from '@/context/AdminContext';
 export default function AdminToolbar() {
   const { isAdmin, exitAdmin, save } = useAdmin();
   const [toast, setToast] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const cvInputRef = useRef<HTMLInputElement>(null);
 
@@ -16,16 +17,22 @@ export default function AdminToolbar() {
     setTimeout(() => setToast(null), 2500);
   };
 
-  const handleSave = () => {
-    save();
-    showToast('Changes saved');
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await save();
+      showToast('Saved & published');
+    } catch {
+      showToast('Save failed');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCVUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-
     setUploading(true);
     try {
       const body = new FormData();
@@ -70,9 +77,10 @@ export default function AdminToolbar() {
 
         <button
           onClick={handleSave}
-          className="px-3.5 py-1.5 bg-warm-accent text-white rounded-md text-xs font-medium hover:opacity-85 transition-opacity"
+          disabled={saving}
+          className="px-3.5 py-1.5 bg-warm-accent text-white rounded-md text-xs font-medium hover:opacity-85 transition-opacity disabled:opacity-60"
         >
-          Save
+          {saving ? 'Saving…' : 'Save & Publish'}
         </button>
         <button
           onClick={exitAdmin}
