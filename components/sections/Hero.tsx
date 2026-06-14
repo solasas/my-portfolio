@@ -17,7 +17,7 @@ export default function Hero() {
             />
             <Editable
               fieldKey="hero-name"
-              defaultContent="Hi, I'm Sashank"
+              defaultContent="Hi, I'm Sashank Solasa"
               as="h1"
               className="font-heading font-bold text-warm-dark tracking-tight mb-5 text-4xl sm:text-5xl"
             />

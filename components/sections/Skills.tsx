@@ -13,9 +13,11 @@ interface SkillCat {
 }
 
 const DEFAULTS: SkillCat[] = [
-  { id: 'cat1', title: 'Languages',        skills: ['Python', 'Java', 'C++', 'JavaScript', 'TypeScript'] },
-  { id: 'cat2', title: 'Web & Frameworks', skills: ['HTML/CSS', 'React', 'Next.js', 'Node.js', 'REST APIs'] },
-  { id: 'cat3', title: 'Tools & Platforms',skills: ['Git', 'Linux', 'Docker', 'SQL', 'MongoDB'] },
+  { id: 'cat1', title: 'Languages',              skills: ['Python', 'Java', 'JavaScript'] },
+  { id: 'cat2', title: 'Web & Frameworks',        skills: ['HTML/CSS', 'React', 'Next.js', 'REST APIs', 'Spring Boot'] },
+  { id: 'cat3', title: 'Databases',               skills: ['Postgres', 'MySQL', 'MongoDB', 'H2'] },
+  { id: 'cat4', title: 'Cloud & DevOps',          skills: ['AWS', 'Docker', 'Git'] },
+  { id: 'cat5', title: 'Other Platforms & Tools', skills: ['Postman', 'Maven', 'Rstudio'] },
 ];
 
 export default function Skills() {

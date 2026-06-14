@@ -5,23 +5,23 @@ import Editable from '@/components/Editable';
 const entries = [
   {
     yearKey: 'edu-1-year',
-    defaultYear: '2021 — 2025',
+    defaultYear: '2023 — 2027',
     degreeKey: 'edu-1-degree',
     defaultDegree: 'B.Tech in Computer Science & Engineering',
     instKey: 'edu-1-inst',
-    defaultInst: 'University Name, City',
+    defaultInst: 'Vellore Institute of Technology - AP',
     detailKey: 'edu-1-detail',
-    defaultDetail: 'CGPA: 8.7 / 10 · Coursework: Data Structures, Algorithms, DBMS, OS, Networks',
+    defaultDetail: 'CGPA: 8.45 / 10 · Coursework: Data Structures, Algorithms, DBMS, OS, Networks',
   },
   {
     yearKey: 'edu-2-year',
-    defaultYear: '2019 — 2021',
+    defaultYear: '2021 — 2023',
     degreeKey: 'edu-2-degree',
-    defaultDegree: 'Class XII — CBSE',
+    defaultDegree: 'Class XII',
     instKey: 'edu-2-inst',
-    defaultInst: 'School Name, City',
+    defaultInst: 'Sri Chaitanya Junior College - Vijayawada',
     detailKey: 'edu-2-detail',
-    defaultDetail: 'Percentage: 94.6% · Stream: PCM with Computer Science',
+    defaultDetail: 'Percentage: 96.5% · Stream: PCM with Computer Science',
   },
 ];
 

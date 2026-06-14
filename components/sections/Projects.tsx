@@ -21,27 +21,19 @@ interface Project {
 const DEFAULTS: Project[] = [
   {
     id: 'proj1',
-    name: 'Smart Task Manager',
-    desc: 'A full-stack task management app with real-time updates, user authentication, and priority-based sorting. React frontend + Node.js/Express backend.',
+    name: 'TaskHive',
+    desc: 'A full-stack task management app with real-time updates, user authentication, and priority-based sorting.',
     github: 'GitHub', githubUrl: '',
-    demo: 'Demo',   demoUrl: '',   showDemo: true,
-    tags: ['React', 'Node.js', 'MongoDB'],
+    demo: 'Demo',     demoUrl: '',   showDemo: false,
+    tags: ['Spring Boot', 'React', 'Postgres'],
   },
   {
     id: 'proj2',
-    name: 'Algorithm Visualizer',
-    desc: 'Interactive web app that visualises sorting and graph-traversal algorithms step-by-step, with adjustable speed and custom input support.',
+    name: 'SkillSwap',
+    desc: 'A peer-to-peer skill-sharing platform backend featuring intelligent matching, exchange request management, session scheduling, and a user rating system.',
     github: 'GitHub', githubUrl: '',
-    demo: 'Demo',   demoUrl: '',   showDemo: true,
-    tags: ['JavaScript', 'Canvas API', 'CSS'],
-  },
-  {
-    id: 'proj3',
-    name: 'CLI DevTools Suite',
-    desc: 'Python productivity scripts — log analyser, directory diff tool, and automated backup utility with configurable scheduling.',
-    github: 'GitHub', githubUrl: '',
-    demo: '',        demoUrl: '',   showDemo: false,
-    tags: ['Python', 'CLI', 'Automation'],
+    demo: 'Demo',     demoUrl: '',   showDemo: false,
+    tags: ['SpringBoot', 'React'],
   },
 ];
 
