@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 68px;
+}
+
+body {
+  @apply bg-warm-bg text-warm-text font-body antialiased;
+}
+
+/* Admin editable outline */
+.admin-active [contenteditable="true"] {
+  @apply outline-dashed outline-[1.5px] outline-warm-soft rounded cursor-text transition-all;
+}
+.admin-active [contenteditable="true"]:hover {
+  @apply outline-warm-accent bg-warm-light/40;
+}
+.admin-active [contenteditable="true"]:focus {
+  @apply outline-[2px] outline-warm-accent bg-warm-light/60;
+}
