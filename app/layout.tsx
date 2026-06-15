@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { Space_Grotesk, Inter } from 'next/font/google';
-import './globals.css';
 import { AdminProvider } from '@/context/AdminContext';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
