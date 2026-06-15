@@ -21,7 +21,7 @@ const entries = [
     instKey: 'edu-2-inst',
     defaultInst: 'Sri Chaitanya Junior College - Vijayawada',
     detailKey: 'edu-2-detail',
-    defaultDetail: 'Percentage: 96.5% · Stream: PCM with Computer Science',
+    defaultDetail: 'Percentage: 96.5% · Stream: PCM (Physics, Chemistry, Mathematics)',
   },
 ];
 
