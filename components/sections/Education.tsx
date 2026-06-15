@@ -11,7 +11,7 @@ const entries = [
     instKey: 'edu-1-inst',
     defaultInst: 'Vellore Institute of Technology - AP',
     detailKey: 'edu-1-detail',
-    defaultDetail: 'CGPA: 8.45 / 10 · Coursework: Data Structures, Algorithms, DBMS, OS, Networks',
+    defaultDetail: 'CGPA: 8.53 / 10 · Coursework: Data Structures, Algorithms, DBMS, OS, Networks',
   },
   {
     yearKey: 'edu-2-year',
