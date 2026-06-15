@@ -35,6 +35,14 @@ const DEFAULTS: Project[] = [
     demo: 'Demo',     demoUrl: '',   showDemo: false,
     tags: ['SpringBoot', 'React'],
   },
+  {
+    id: 'proj3',
+    name: 'Emotion-Detector From Text',
+    desc: 'Detects emotions from text using a pretrained DistilRoBERTa model. Built with HuggingFace Transformers and Gradio. Supports 7 emotions: joy, anger, sadness, fear, surprise, disgust, and neutral.',
+    github: 'GitHub', githubUrl: 'https://github.com/solasas/Emotion-Detector',
+    demo: 'Demo',     demoUrl: '',   showDemo: false,
+    tags: ['python', 'Gradio','HuggingFace'],
+  },
 ];
 
 function inlineEditable(
