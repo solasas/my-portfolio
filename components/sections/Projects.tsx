@@ -29,6 +29,14 @@ const DEFAULTS: Project[] = [
   },
   {
     id: 'proj2',
+    name: 'AnomCity.AI',
+    desc: 'A multi-source urban anomaly detection dashboard fusing traffic, weather, and crime data, using Isolation Forest and LSTM models with a real-time geospatial alert visualization.',
+    github: 'GitHub', githubUrl: 'https://github.com/solasas/AnomCity.AI',
+    demo: 'Demo',     demoUrl: '',   showDemo: false,
+    tags: ['FastAPI', 'React', 'ML'],
+  },
+  {
+    id: 'proj3',
     name: 'SkillSwap',
     desc: 'A peer-to-peer skill-sharing platform backend featuring intelligent matching, exchange request management, session scheduling, and a user rating system.',
     github: 'GitHub', githubUrl: 'https://github.com/solasas/skillswap',
@@ -36,7 +44,7 @@ const DEFAULTS: Project[] = [
     tags: ['SpringBoot', 'React'],
   },
   {
-    id: 'proj3',
+    id: 'proj4',
     name: 'Emotion-Detector From Text',
     desc: 'Detects emotions from text using a pretrained DistilRoBERTa model. Built with HuggingFace Transformers and Gradio. Supports 7 emotions: joy, anger, sadness, fear, surprise, disgust, and neutral.',
     github: 'GitHub', githubUrl: 'https://github.com/solasas/Emotion-Detector',
