@@ -31,7 +31,7 @@ const entries = [
     instKey: 'edu-3-inst',
     defaultInst: 'St. Claret High School ',
     detailKey: 'edu-3-detail',
-    // defaultDetail: 'Percentage: 95% · Stream: Science',
+    defaultDetail: '',
   }
 ];
 
