@@ -23,6 +23,16 @@ const entries = [
     detailKey: 'edu-2-detail',
     defaultDetail: 'Percentage: 96.5% · Stream: PCM (Physics, Chemistry, Mathematics)',
   },
+  {
+    yearKey: 'edu-3-year',
+    defaultYear: '2009 — 2021',
+    degreeKey: 'edu-3-degree',
+    defaultDegree: 'Class X',
+    instKey: 'edu-3-inst',
+    defaultInst: 'St. Claret High School ',
+    detailKey: 'edu-3-detail',
+    // defaultDetail: 'Percentage: 95% · Stream: Science',
+  }
 ];
 
 export default function Education() {
