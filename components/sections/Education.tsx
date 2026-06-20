@@ -27,7 +27,7 @@ const entries = [
     yearKey: 'edu-3-year',
     defaultYear: '2009 — 2021',
     degreeKey: 'edu-3-degree',
-    defaultDegree: 'Class X',
+    defaultDegree: 'Schooling',
     instKey: 'edu-3-inst',
     defaultInst: 'St. Claret High School ',
     detailKey: 'edu-3-detail',
