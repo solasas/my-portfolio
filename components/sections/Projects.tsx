@@ -20,20 +20,12 @@ interface Project {
 
 const DEFAULTS: Project[] = [
   {
-    id: 'proj1',
-    name: 'TaskHive',
-    desc: 'A full-stack task management app with real-time updates, user authentication, and priority-based sorting.',
-    github: 'GitHub', githubUrl: 'https://github.com/solasas/Taskhive',
+    id: 'proj5',
+    name: 'Wayfinder',
+    desc: 'A geospatial routing engine that computes shortest paths over real-world road networks, combining PostGIS spatial queries with Dijkstra\'s algorithm on OpenStreetMap data.',
+    github: 'GitHub', githubUrl: 'https://github.com/solasas/Wayfinder',
     demo: 'Demo',     demoUrl: '',   showDemo: false,
-    tags: ['Spring Boot', 'React', 'Postgres'],
-  },
-  {
-    id: 'proj2',
-    name: 'AnomCity.AI',
-    desc: 'A multi-source urban anomaly detection dashboard fusing traffic, weather, and crime data, using Isolation Forest and LSTM models with a real-time geospatial alert visualization.',
-    github: 'GitHub', githubUrl: 'https://github.com/solasas/AnomCity.AI',
-    demo: 'Demo',     demoUrl: '',   showDemo: false,
-    tags: ['FastAPI', 'React', 'ML'],
+    tags: ['PostGIS', 'Dijkstra', 'OpenStreetMap'],
   },
   {
     id: 'proj3',
@@ -44,12 +36,36 @@ const DEFAULTS: Project[] = [
     tags: ['SpringBoot', 'React'],
   },
   {
+    id: 'proj1',
+    name: 'TaskHive',
+    desc: 'A full-stack task management app with real-time updates, user authentication, and priority-based sorting.',
+    github: 'GitHub', githubUrl: 'https://github.com/solasas/Taskhive',
+    demo: 'Demo',     demoUrl: '',   showDemo: false,
+    tags: ['Spring Boot', 'React', 'Postgres'],
+  },
+  {
     id: 'proj4',
     name: 'Emotion-Detector From Text',
     desc: 'Detects emotions from text using a pretrained DistilRoBERTa model. Built with HuggingFace Transformers and Gradio. Supports 7 emotions: joy, anger, sadness, fear, surprise, disgust, and neutral.',
     github: 'GitHub', githubUrl: 'https://github.com/solasas/Emotion-Detector',
     demo: 'Demo',     demoUrl: '',   showDemo: false,
     tags: ['python', 'Gradio','HuggingFace'],
+  },
+  {
+    id: 'proj6',
+    name: 'EPG Data Pipeline',
+    desc: 'An orchestrated ETL pipeline that ingests and transforms electronic program guide data, using Airflow for scheduling, FastAPI for serving, and PostgreSQL for storage.',
+    github: 'GitHub', githubUrl: 'https://github.com/solasas/EPG-Data-Pipeline',
+    demo: 'Demo',     demoUrl: '',   showDemo: false,
+    tags: ['Airflow', 'FastAPI', 'PostgreSQL'],
+  },
+  {
+    id: 'proj2',
+    name: 'AnomCity.AI',
+    desc: 'A multi-source urban anomaly detection dashboard fusing traffic, weather, and crime data, using Isolation Forest and LSTM models with a real-time geospatial alert visualization.',
+    github: 'GitHub', githubUrl: 'https://github.com/solasas/AnomCity.AI',
+    demo: 'Demo',     demoUrl: '',   showDemo: false,
+    tags: ['FastAPI', 'React', 'ML'],
   },
 ];
 
