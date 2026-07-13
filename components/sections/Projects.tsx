@@ -36,6 +36,17 @@ const DEFAULTS: Project[] = [
     tags: ['SpringBoot', 'React'],
   },
   {
+  id: 'proj2',
+  name: 'CouponPing',
+  desc: 'A Flutter-based smart coupon wallet that scans coupons using OCR and barcode detection, stores them securely, and sends timely expiry reminders with search, filtering, and analytics.',
+  github: 'GitHub',
+  githubUrl: 'https://github.com/solasas/CouponPing',
+  demo: 'Demo',
+  demoUrl: '',
+  showDemo: false,
+  tags: ['Flutter', 'Riverpod', 'Hive', 'Google ML Kit'],
+},
+  {
     id: 'proj1',
     name: 'TaskHive',
     desc: 'A full-stack task management app with real-time updates, user authentication, and priority-based sorting.',
@@ -67,6 +78,7 @@ const DEFAULTS: Project[] = [
     demo: 'Demo',     demoUrl: '',   showDemo: false,
     tags: ['FastAPI', 'React', 'ML'],
   },
+  
 ];
 
 function inlineEditable(
