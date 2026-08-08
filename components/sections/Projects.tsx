@@ -46,6 +46,17 @@ const DEFAULTS: Project[] = [
   showDemo: false,
   tags: ['Flutter', 'Riverpod', 'Hive', 'Google ML Kit'],
 },
+{
+  id: 'proj7',
+  name: 'Recur',
+  desc: 'A cross-platform subscription tracking app that helps users monitor recurring expenses, upcoming renewals, and spending insights. Built with Expo and React Native, with local authentication and subscription data persistence using AsyncStorage, and file-based navigation through Expo Router.',
+  github: 'GitHub',
+  githubUrl: 'https://github.com/solasas/Recur', // add your GitHub URL
+  demo: 'Demo',
+  demoUrl: '', // add your demo URL if available
+  showDemo: false,
+  tags: ['React Native', 'Expo', 'TypeScript', 'AsyncStorage', 'NativeWind'],
+},
   {
     id: 'proj1',
     name: 'TaskHive',
