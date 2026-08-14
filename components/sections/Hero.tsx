@@ -41,7 +41,7 @@ export default function Hero() {
                 See My Work
               </a>
               <a
-                href="/cv.pdf"
+                href="/sashank's resume.pdf"
                 download="sashank's resume"
                 className="inline-flex items-center gap-2 px-6 py-2.5 border-[1.5px] border-warm-border text-warm-muted rounded-lg text-sm font-medium hover:border-warm-accent hover:text-warm-accent active:scale-95 transition-all"
               >
