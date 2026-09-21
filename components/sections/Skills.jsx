@@ -1,31 +1,30 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAdmin } from '@/context/AdminContext';
 import Editable from '@/components/Editable';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 const STORE_KEY = 'portfolio_v1_skills-data';
 
-interface SkillCat {
-  id: string;
-  title: string;
-  skills: string[];
-}
-
-const DEFAULTS: SkillCat[] = [
-  { id: 'cat1', title: 'Languages',              skills: ['Python', 'Java', 'JavaScript'] },
-  { id: 'cat2', title: 'Web & Frameworks',        skills: ['HTML/CSS', 'React', 'Next.js', 'REST APIs', 'Spring Boot'] },
-  { id: 'cat3', title: 'Databases',               skills: ['Postgres', 'MySQL', 'MongoDB', 'H2'] },
-  { id: 'cat4', title: 'Cloud & DevOps',          skills: ['AWS', 'Docker', 'Git'] },
-  { id: 'cat5', title: 'Other Platforms & Tools', skills: ['Postman', 'Maven', 'Rstudio'] },
+const DEFAULTS = [
+  { id: 'cat1', title: 'Languages',        skills: ['Java', 'Python', 'JavaScript'] },
+  { id: 'cat2', title: 'Frontend',         skills: ['HTML5', 'CSS', 'React'] },
+  { id: 'cat3', title: 'Backend & APIs',   skills: ['Spring Boot', 'Spring Security', 'Spring Data JPA', 'RESTful APIs', 'JWT', 'Microservices Architecture'] },
+  { id: 'cat4', title: 'Databases',        skills: ['PostgreSQL', 'MySQL', 'MongoDB'] },
+  { id: 'cat5', title: 'Cloud (AWS)',      skills: ['EC2', 'S3', 'RDS', 'Lambda', 'IAM', 'DynamoDB'] },
+  { id: 'cat6', title: 'Data & ML',        skills: ['NumPy', 'Pandas', 'Scikit-learn', 'Power BI', 'RAG', 'Airflow'] },
+  { id: 'cat7', title: 'Mobile',           skills: ['Flutter'] },
+  { id: 'cat8', title: 'Tools & Build',    skills: ['Git', 'GitHub', 'Maven', 'JUnit', 'Mockito', 'Postman', 'Docker', 'CI/CD', 'JMeter', 'Claude Code'] },
 ];
 
 export default function Skills() {
   const { isAdmin } = useAdmin();
-  const [cats, setCats] = useState<SkillCat[]>(DEFAULTS);
-  const [addingSkillIn, setAddingSkillIn] = useState<Record<string, string | undefined>>({});
+  const [cats, setCats] = useState(DEFAULTS);
+  const [addingSkillIn, setAddingSkillIn] = useState({});
   const [addingCat, setAddingCat] = useState(false);
   const [newCatName, setNewCatName] = useState('');
+  const sectionRef = useRef(null);
 
   useEffect(() => {
     const load = () => {
@@ -37,15 +36,28 @@ export default function Skills() {
     return () => window.removeEventListener('portfolio-content-loaded', load);
   }, []);
 
-  const persist = (updated: SkillCat[]) => {
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const cards = gsap.utils.toArray('.skill-card');
+      gsap.set(cards, { opacity: 0, y: 24 });
+      ScrollTrigger.batch(cards, {
+        start: 'top 88%',
+        once: true,
+        onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, duration: 0.6, stagger: 0.08, ease: 'power3.out' }),
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, [cats]);
+
+  const persist = (updated) => {
     localStorage.setItem(STORE_KEY, JSON.stringify(updated));
     setCats(updated);
   };
 
-  const updateTitle = (id: string, title: string) =>
+  const updateTitle = (id, title) =>
     persist(cats.map(c => (c.id === id ? { ...c, title } : c)));
 
-  const removeCategory = (id: string) =>
+  const removeCategory = (id) =>
     persist(cats.filter(c => c.id !== id));
 
   const addCategory = () => {
@@ -55,17 +67,17 @@ export default function Skills() {
     setNewCatName('');
   };
 
-  const removeSkill = (id: string, idx: number) =>
+  const removeSkill = (id, idx) =>
     persist(cats.map(c => (c.id === id ? { ...c, skills: c.skills.filter((_, i) => i !== idx) } : c)));
 
-  const addSkill = (id: string) => {
+  const addSkill = (id) => {
     const name = (addingSkillIn[id] ?? '').trim();
     if (name) persist(cats.map(c => (c.id === id ? { ...c, skills: [...c.skills, name] } : c)));
     setAddingSkillIn(prev => ({ ...prev, [id]: undefined }));
   };
 
   return (
-    <section id="skills" className="py-24 bg-white">
+    <section id="skills" className="py-24 bg-white" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-6">
         <Editable fieldKey="skills-title" defaultContent="Skills" as="h2"
           className="font-heading font-bold text-3xl text-warm-dark tracking-tight mb-2" />
@@ -74,7 +86,7 @@ export default function Skills() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {cats.map(cat => (
-            <div key={cat.id} className="relative bg-warm-bg border border-warm-border rounded-xl p-6">
+            <div key={cat.id} className="skill-card relative bg-warm-bg border border-warm-border rounded-xl p-6">
 
               {/* Delete category */}
               {isAdmin && (
@@ -92,7 +104,7 @@ export default function Skills() {
                 suppressContentEditableWarning: true,
                 dangerouslySetInnerHTML: { __html: cat.title },
                 onBlur: isAdmin
-                  ? (e: React.FocusEvent<HTMLHeadingElement>) => {
+                  ? (e) => {
                       const v = e.currentTarget.innerText.trim();
                       if (v !== cat.title) updateTitle(cat.id, v);
                     }

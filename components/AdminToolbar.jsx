@@ -5,12 +5,12 @@ import { useAdmin } from '@/context/AdminContext';
 
 export default function AdminToolbar() {
   const { isAdmin, exitAdmin, save } = useAdmin();
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState(null);
   const [saving, setSaving] = useState(false);
 
   if (!isAdmin) return null;
 
-  const showToast = (msg: string) => {
+  const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 2500);
   };

@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import Editable from '@/components/Editable';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 const GithubIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
@@ -30,8 +32,23 @@ const items = [
 ];
 
 export default function Contact() {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const rows = gsap.utils.toArray('.contact-item');
+      gsap.set(rows, { opacity: 0, y: 20 });
+      ScrollTrigger.batch(rows, {
+        start: 'top 90%',
+        once: true,
+        onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'power3.out' }),
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="contact" className="py-24 bg-warm-bg">
+    <section id="contact" className="py-24 bg-warm-bg" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-6 text-center">
         <Editable
           fieldKey="contact-title"
@@ -53,7 +70,7 @@ export default function Contact() {
               href={item.href}
               target={item.href.startsWith('http') ? '_blank' : undefined}
               rel="noopener noreferrer"
-              className="flex items-center gap-3 w-full max-w-xs px-6 py-3.5 bg-white border border-warm-border rounded-xl text-warm-muted hover:border-warm-soft hover:bg-warm-card transition-all text-[0.9375rem]"
+              className="contact-item flex items-center gap-3 w-full max-w-xs px-6 py-3.5 bg-white border border-warm-border rounded-xl text-warm-muted hover:border-warm-soft hover:bg-warm-card transition-all text-[0.9375rem]"
             >
               <span className="w-7 h-7 bg-warm-light rounded-md flex items-center justify-center text-warm-accent shrink-0">
                 {item.icon}

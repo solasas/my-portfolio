@@ -1,11 +1,27 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Editable from '@/components/Editable';
+import { gsap } from '@/lib/gsap';
 
 export default function Hero() {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.7 } })
+        .from('.hero-label', { opacity: 0, y: 14 })
+        .from('.hero-name', { opacity: 0, y: 18 }, '-=0.5')
+        .from('.hero-bio', { opacity: 0, y: 18 }, '-=0.5')
+        .from('.hero-actions > *', { opacity: 0, y: 14, stagger: 0.08 }, '-=0.45')
+        .from('.hero-avatar', { opacity: 0, scale: 0.94 }, '-=0.6');
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="about" className="pt-36 pb-24">
+    <section id="about" className="pt-36 pb-24" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-12 items-center">
           <div>
@@ -13,21 +29,21 @@ export default function Hero() {
               fieldKey="hero-label"
               defaultContent="Software Developer"
               as="p"
-              className="text-[0.75rem] font-medium text-warm-accent uppercase tracking-[0.12em] mb-3"
+              className="hero-label text-[0.75rem] font-medium text-warm-accent uppercase tracking-[0.12em] mb-3"
             />
             <Editable
               fieldKey="hero-name"
               defaultContent="Hi, I'm Sashank Solasa"
               as="h1"
-              className="font-heading font-bold text-warm-dark tracking-tight mb-5 text-4xl sm:text-5xl"
+              className="hero-name font-heading font-bold text-warm-dark tracking-tight mb-5 text-4xl sm:text-5xl"
             />
             <Editable
               fieldKey="hero-bio"
               defaultContent="I'm a fresher SDE passionate about building clean, efficient software. I love solving complex problems with elegant code, and I'm always eager to learn and grow. Currently seeking opportunities where I can contribute meaningfully from day one."
               as="p"
-              className="text-[0.9375rem] text-warm-muted leading-[1.8] max-w-xl mb-9"
+              className="hero-bio text-[0.9375rem] text-warm-muted leading-[1.8] max-w-xl mb-9"
             />
-            <div className="flex gap-3 flex-wrap">
+            <div className="hero-actions flex gap-3 flex-wrap">
               <a
                 href="#contact"
                 className="px-6 py-2.5 bg-warm-accent text-white rounded-lg text-sm font-medium hover:opacity-85 active:scale-95 transition-all"
@@ -54,13 +70,13 @@ export default function Hero() {
           </div>
 
           {/* Avatar */}
-          <div className="order-first sm:order-last">
-            <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden border-2 border-warm-border shadow-sm shrink-0">
+          <div className="hero-avatar order-first sm:order-last">
+            <div className="w-56 h-64 sm:w-72 sm:h-80 rounded-2xl overflow-hidden border-2 border-warm-border shadow-sm shrink-0">
               <Image
                 src="/avatar.jpeg"
                 alt="Sashank"
-                width={176}
-                height={176}
+                width={288}
+                height={320}
                 className="w-full h-full object-cover object-top"
                 priority
               />

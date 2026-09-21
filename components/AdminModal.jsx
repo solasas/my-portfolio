@@ -10,7 +10,7 @@ export default function AdminModal() {
   const [open, setOpen] = useState(false);
   const [pw, setPw] = useState('');
   const [error, setError] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     const handler = () => {

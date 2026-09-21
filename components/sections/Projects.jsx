@@ -1,24 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAdmin } from '@/context/AdminContext';
 import Editable from '@/components/Editable';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 const STORE_KEY = 'portfolio_v1_projects-data';
 
-interface Project {
-  id: string;
-  name: string;
-  desc: string;
-  github: string;
-  githubUrl: string;
-  demo: string;
-  demoUrl: string;
-  showDemo: boolean;
-  tags: string[];
-}
-
-const DEFAULTS: Project[] = [
+const DEFAULTS = [
   {
     id: 'proj5',
     name: 'Wayfinder',
@@ -81,30 +70,15 @@ const DEFAULTS: Project[] = [
     demo: 'Demo',     demoUrl: '',   showDemo: false,
     tags: ['Airflow', 'FastAPI', 'PostgreSQL'],
   },
-  {
-    id: 'proj2',
-    name: 'AnomCity.AI',
-    desc: 'A multi-source urban anomaly detection dashboard fusing traffic, weather, and crime data, using Isolation Forest and LSTM models with a real-time geospatial alert visualization.',
-    github: 'GitHub', githubUrl: 'https://github.com/solasas/AnomCity.AI',
-    demo: 'Demo',     demoUrl: '',   showDemo: false,
-    tags: ['FastAPI', 'React', 'ML'],
-  },
-  
 ];
 
-function inlineEditable(
-  tag: string,
-  value: string,
-  isAdmin: boolean,
-  onBlur: (v: string) => void,
-  className: string
-) {
+function inlineEditable(tag, value, isAdmin, onBlur, className) {
   return React.createElement(tag, {
     contentEditable: isAdmin || undefined,
     suppressContentEditableWarning: true,
     dangerouslySetInnerHTML: { __html: value },
     onBlur: isAdmin
-      ? (e: React.FocusEvent<HTMLElement>) => {
+      ? (e) => {
           const v = e.currentTarget.innerText.trim();
           if (v !== value) onBlur(v);
         }
@@ -115,8 +89,9 @@ function inlineEditable(
 
 export default function Projects() {
   const { isAdmin } = useAdmin();
-  const [projects, setProjects] = useState<Project[]>(DEFAULTS);
-  const [addingTagIn, setAddingTagIn] = useState<Record<string, string | undefined>>({});
+  const [projects, setProjects] = useState(DEFAULTS);
+  const [addingTagIn, setAddingTagIn] = useState({});
+  const sectionRef = useRef(null);
 
   useEffect(() => {
     const load = () => {
@@ -128,15 +103,28 @@ export default function Projects() {
     return () => window.removeEventListener('portfolio-content-loaded', load);
   }, []);
 
-  const persist = (updated: Project[]) => {
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const cards = gsap.utils.toArray('.project-card');
+      gsap.set(cards, { opacity: 0, y: 28 });
+      ScrollTrigger.batch(cards, {
+        start: 'top 88%',
+        once: true,
+        onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, duration: 0.6, stagger: 0.08, ease: 'power3.out' }),
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, [projects]);
+
+  const persist = (updated) => {
     localStorage.setItem(STORE_KEY, JSON.stringify(updated));
     setProjects(updated);
   };
 
-  const update = (id: string, patch: Partial<Project>) =>
+  const update = (id, patch) =>
     persist(projects.map(p => (p.id === id ? { ...p, ...patch } : p)));
 
-  const removeProject = (id: string) => persist(projects.filter(p => p.id !== id));
+  const removeProject = (id) => persist(projects.filter(p => p.id !== id));
 
   const addProject = () =>
     persist([
@@ -151,17 +139,17 @@ export default function Projects() {
       },
     ]);
 
-  const removeTag = (id: string, idx: number) =>
-    update(id, { tags: projects.find(p => p.id === id)!.tags.filter((_, i) => i !== idx) });
+  const removeTag = (id, idx) =>
+    update(id, { tags: projects.find(p => p.id === id).tags.filter((_, i) => i !== idx) });
 
-  const addTag = (id: string) => {
+  const addTag = (id) => {
     const name = (addingTagIn[id] ?? '').trim();
-    if (name) update(id, { tags: [...projects.find(p => p.id === id)!.tags, name] });
+    if (name) update(id, { tags: [...projects.find(p => p.id === id).tags, name] });
     setAddingTagIn(prev => ({ ...prev, [id]: undefined }));
   };
 
   return (
-    <section id="projects" className="py-24 bg-warm-bg">
+    <section id="projects" className="py-24 bg-warm-bg" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-6">
         <Editable fieldKey="projects-title" defaultContent="Projects" as="h2"
           className="font-heading font-bold text-3xl text-warm-dark tracking-tight mb-2" />
@@ -170,7 +158,7 @@ export default function Projects() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {projects.map(p => (
-            <article key={p.id} className="relative bg-white border border-warm-border rounded-xl p-6 flex flex-col transition-all duration-200 hover:border-warm-soft hover:-translate-y-0.5">
+            <article key={p.id} className="project-card relative bg-white border border-warm-border rounded-xl p-6 flex flex-col transition-all duration-200 hover:border-warm-soft hover:-translate-y-0.5">
 
               {/* Delete project */}
               {isAdmin && (
@@ -292,6 +280,19 @@ export default function Projects() {
               )}
             </article>
           ))}
+
+          {/* More on GitHub */}
+          <a
+            href="https://github.com/solasas"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="project-card flex flex-col justify-center gap-2 bg-warm-dark border border-warm-dark rounded-xl p-6 text-warm-light transition-all duration-200 hover:-translate-y-0.5 hover:opacity-90"
+          >
+            <span className="font-heading font-semibold text-[1.0625rem]">More on GitHub →</span>
+            <p className="text-[0.8125rem] text-warm-light/70 leading-relaxed">
+              Experiments, side projects, half-finished ideas, and things that didn&apos;t make this list. The interesting stuff usually lives here first.
+            </p>
+          </a>
 
           {/* Add new project */}
           {isAdmin && (

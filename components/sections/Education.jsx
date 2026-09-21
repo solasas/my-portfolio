@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import Editable from '@/components/Editable';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 const entries = [
   {
@@ -11,7 +13,7 @@ const entries = [
     instKey: 'edu-1-inst',
     defaultInst: 'Vellore Institute of Technology - AP',
     detailKey: 'edu-1-detail',
-    defaultDetail: 'CGPA: 8.53 / 10 · Coursework: Data Structures, Algorithms, DBMS, OS, Networks',
+    defaultDetail: 'CGPA: 8.53/10 · Coursework: Data Structures, Algorithms, DBMS, OS, Networks',
   },
   {
     yearKey: 'edu-2-year',
@@ -36,8 +38,23 @@ const entries = [
 ];
 
 export default function Education() {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const rows = gsap.utils.toArray('.timeline-entry');
+      gsap.set(rows, { opacity: 0, x: -24 });
+      ScrollTrigger.batch(rows, {
+        start: 'top 88%',
+        once: true,
+        onEnter: batch => gsap.to(batch, { opacity: 1, x: 0, duration: 0.6, stagger: 0.12, ease: 'power3.out' }),
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="education" className="py-24 bg-white">
+    <section id="education" className="py-24 bg-white" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-6">
         <Editable
           fieldKey="edu-title"
@@ -56,7 +73,7 @@ export default function Education() {
           {entries.map((e, i) => (
             <div
               key={e.yearKey}
-              className={`relative pl-8 pb-10 ${i === entries.length - 1 ? 'pb-0' : ''}`}
+              className={`timeline-entry relative pl-8 pb-10 ${i === entries.length - 1 ? 'pb-0' : ''}`}
             >
               {/* Timeline dot */}
               <div className="absolute -left-[7px] top-1 w-3 h-3 rounded-full bg-warm-border border-2 border-white" />

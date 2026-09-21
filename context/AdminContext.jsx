@@ -7,37 +7,27 @@ import {
   useRef,
   useEffect,
   useCallback,
-  type ReactNode,
 } from 'react';
 
 const PREFIX = 'portfolio_v1_';
 
-interface Ctx {
-  isAdmin: boolean;
-  enterAdmin: (password: string) => void;
-  exitAdmin: () => void;
-  getContent: (key: string) => string | undefined;
-  trackChange: (key: string, value: string) => void;
-  save: () => Promise<void>;
-}
+const AdminContext = createContext(null);
 
-const AdminContext = createContext<Ctx | null>(null);
-
-export function AdminProvider({ children }: { children: ReactNode }) {
+export function AdminProvider({ children }) {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [savedContent, setSavedContent] = useState<Record<string, string>>({});
-  const pending = useRef<Record<string, string>>({});
+  const [savedContent, setSavedContent] = useState({});
+  const pending = useRef({});
 
   useEffect(() => {
-    const loaded: Record<string, string> = {};
+    const loaded = {};
     for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i)!;
-      if (k.startsWith(PREFIX)) loaded[k.slice(PREFIX.length)] = localStorage.getItem(k)!;
+      const k = localStorage.key(i);
+      if (k.startsWith(PREFIX)) loaded[k.slice(PREFIX.length)] = localStorage.getItem(k);
     }
     setSavedContent(loaded);
   }, []);
 
-  const enterAdmin = useCallback((password: string) => {
+  const enterAdmin = useCallback((password) => {
     void password;
     setIsAdmin(true);
   }, []);
@@ -48,11 +38,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const getContent = useCallback(
-    (key: string) => savedContent[key],
+    (key) => savedContent[key],
     [savedContent]
   );
 
-  const trackChange = useCallback((key: string, value: string) => {
+  const trackChange = useCallback((key, value) => {
     pending.current[key] = value;
   }, []);
 
@@ -62,10 +52,10 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     );
     pending.current = {};
 
-    const allContent: Record<string, string> = {};
+    const allContent = {};
     for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i)!;
-      if (k.startsWith(PREFIX)) allContent[k.slice(PREFIX.length)] = localStorage.getItem(k)!;
+      const k = localStorage.key(i);
+      if (k.startsWith(PREFIX)) allContent[k.slice(PREFIX.length)] = localStorage.getItem(k);
     }
     setSavedContent(allContent);
   }, []);
