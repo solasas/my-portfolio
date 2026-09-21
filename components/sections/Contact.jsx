@@ -29,6 +29,12 @@ const items = [
     defaultLabel: 'github.com/solasas',
     href: 'https://github.com/solasas',
   },
+  {
+    icon: <span className="text-[0.625rem] font-bold">LC</span>,
+    labelKey: 'contact-leetcode',
+    defaultLabel: 'leetcode.com/u/sashanksolasa',
+    href: 'https://leetcode.com/u/sashanksolasa',
+  },
 ];
 
 export default function Contact() {
