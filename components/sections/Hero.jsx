@@ -9,15 +9,20 @@ export default function Hero() {
   const sectionRef = useRef(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.7 } })
-        .from('.hero-label', { opacity: 0, y: 14 })
-        .from('.hero-name', { opacity: 0, y: 18 }, '-=0.5')
-        .from('.hero-bio', { opacity: 0, y: 18 }, '-=0.5')
-        .from('.hero-actions > *', { opacity: 0, y: 14, stagger: 0.08 }, '-=0.45')
-        .from('.hero-avatar', { opacity: 0, scale: 0.94 }, '-=0.6');
-    }, sectionRef);
-    return () => ctx.revert();
+    if (!sectionRef.current) return;
+
+    const timeoutId = setTimeout(() => {
+      gsap.context(() => {
+        gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.7 } })
+          .from('.hero-label', { opacity: 0, y: 14, clearProps: 'opacity,y' })
+          .from('.hero-name', { opacity: 0, y: 18, clearProps: 'opacity,y' }, '-=0.5')
+          .from('.hero-bio', { opacity: 0, y: 18, clearProps: 'opacity,y' }, '-=0.5')
+          .from('.hero-actions > *', { opacity: 0, y: 14, stagger: 0.08, clearProps: 'opacity,y' }, '-=0.45')
+          .from('.hero-avatar', { opacity: 0, scale: 0.94, clearProps: 'opacity,scale' }, '-=0.6');
+      }, sectionRef);
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   return (
