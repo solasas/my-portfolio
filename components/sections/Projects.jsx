@@ -10,9 +10,9 @@ const STORE_KEY = 'portfolio_v1_projects-data';
 const DEFAULTS = [
   {
     id: 'proj8',
-    name: 'Netrace',
+    name: 'NetRace',
     desc: 'A network performance analysis tool that measures DNS resolution, TCP connection, TLS handshake, and HTTP request/response timing with real requests. Features interactive waterfall visualizations, multi-URL comparison modes, and comprehensive phase detail panels.',
-    github: 'GitHub', githubUrl: '',
+    github: 'GitHub', githubUrl: 'https://github.com/solasas/NetRace',
     demo: 'Demo',     demoUrl: '',   showDemo: false,
     tags: ['Java', 'Spring Boot', 'React', 'Vite', 'Tailwind CSS'],
   },
