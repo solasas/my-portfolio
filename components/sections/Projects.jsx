@@ -9,6 +9,14 @@ const STORE_KEY = 'portfolio_v1_projects-data';
 
 const DEFAULTS = [
   {
+    id: 'proj8',
+    name: 'Netrace',
+    desc: 'A network performance analysis tool that measures DNS resolution, TCP connection, TLS handshake, and HTTP request/response timing with real requests. Features interactive waterfall visualizations, multi-URL comparison modes, and comprehensive phase detail panels.',
+    github: 'GitHub', githubUrl: '',
+    demo: 'Demo',     demoUrl: '',   showDemo: false,
+    tags: ['Java', 'Spring Boot', 'React', 'Vite', 'Tailwind CSS'],
+  },
+  {
     id: 'proj5',
     name: 'Wayfinder',
     desc: 'A geospatial routing engine that computes shortest paths over real-world road networks, combining PostGIS spatial queries with Dijkstra\'s algorithm on OpenStreetMap data.',
