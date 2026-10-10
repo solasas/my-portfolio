@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx next *)",
+      "Bash(npm uninstall *)",
+      "Bash(npm install *)",
+      "Bash(psql --version)",
+      "Bash(npx vercel *)"
+    ]
+  }
+}
