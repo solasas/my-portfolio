@@ -1,0 +1,1437 @@
+/* ==========================================================================
+   Portfolio styles
+
+   Structure
+     1. Tokens        colours (two themes), type, motion, layering
+     2. Base          reset, typography, focus, skip link
+     3. Layout        header + nav, sections, footer
+     4. Loader
+     5. Hero          stage, frame, spotlight word, controls
+     6. Index         the shared row component (Skills + Projects)
+     7. About
+     8. Education     the road trip
+     9. Contact
+    10. Resume        call-to-action + viewer
+    11. Responsive
+    12. Reduced motion
+
+   Everything that animates keys off one of these states, set by script.js:
+     html.js            JavaScript is running (hidden-until-revealed states only apply then)
+     body.ready         loader finished, entrance can play
+     .in / .lit / .reached   an element has been revealed / lit / passed by the car
+   ========================================================================== */
+
+/* 1. Tokens ================================================================ */
+
+:root {
+  /* type */
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Anton", Impact, "Arial Narrow", sans-serif;
+
+  /* motion */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-fast: 0.2s;
+  --dur-base: 0.5s;
+  --dur-slow: 0.9s;
+
+  /* shape + layout */
+  --radius: 14px;
+  --gutter: 16px;
+  --max: 1120px;
+
+  /* layering */
+  --z-header: 50;
+  --z-loader: 100;
+  --z-modal: 200;
+}
+
+/* Palette: warm black + bone with one signal colour (vermilion).
+   Neutrals carry a little warmth so nothing reads as cold grey; the accent is
+   used sparingly (kicker, hovers, the car, reached stops). */
+
+/* Theme: Ink (default, dark) */
+:root,
+:root[data-theme="ink"] {
+  color-scheme: dark;
+  --bg: #100e0c;
+  --surface: #1a1714;
+  --text: #efe8da;
+  --muted: #a39a89;
+  --line: #2a2520;
+  --line-strong: #4a4238;
+  --accent: #ff5a36;
+  --hero-a: #1e1914;
+  --hero-fill: #efe8da;
+  --stroke: rgba(239, 232, 218, 0.42);
+  --knot-a: #b8452a;
+  --knot-b: #f4e7d0;
+  --knot-blend: additive;
+  --pill: #efe8da;
+  --pill-text: #100e0c;
+  --on-accent: #100e0c;
+  --grain: 0.07;
+}
+
+/* Theme: Paper (light) */
+:root[data-theme="paper"] {
+  color-scheme: light;
+  --bg: #ede7da;
+  --surface: #f6f1e6;
+  --text: #1a1713;
+  --muted: #645c4f;
+  --line: #d8d0bf;
+  --line-strong: #a89e8a;
+  --accent: #b8321a;
+  --hero-a: #f6f1e6;
+  --hero-fill: #1a1713;
+  --stroke: rgba(26, 23, 19, 0.5);
+  --knot-a: #7a2e1c;
+  --knot-b: #8f8470;
+  --knot-blend: normal;
+  --pill: #1a1713;
+  --pill-text: #ede7da;
+  --on-accent: #f6f1e6;
+  --grain: 0.09;
+}
+
+/* 2. Base ================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  accent-color: var(--accent);
+  scroll-behavior: smooth;
+  scroll-padding-top: 72px; /* anchors land below the sticky header */
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* A whisper of paper grain over everything; static, so it costs nothing at runtime */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: var(--grain, 0.07);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+h1,
+h2 {
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: clamp(30px, 5vw, 48px);
+  margin-bottom: 28px;
+}
+
+h3 {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: calc(var(--z-modal) + 1);
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--pill);
+  color: var(--pill-text);
+  font-size: 13px;
+  font-weight: 600;
+  transform: translateY(-160%);
+  transition: transform var(--dur-fast) ease;
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* 3. Layout ================================================================ */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px var(--gutter);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-size: 14px;
+}
+
+.nav a {
+  color: var(--muted);
+  transition: color var(--dur-fast);
+}
+
+.nav a:hover,
+.nav a[aria-current="true"] {
+  color: var(--text);
+}
+
+.nav .nav-resume {
+  padding: 6px 14px;
+  border: 1px solid var(--text);
+  border-radius: 999px;
+  color: var(--text);
+  font-weight: 600;
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+
+.nav .nav-resume:hover {
+  background: var(--pill);
+  color: var(--pill-text);
+}
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.menu-toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+}
+
+main {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.section {
+  padding: 96px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.footer {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 22px var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.to-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  transition: color var(--dur-fast);
+}
+
+.to-top span {
+  display: inline-block;
+  transition: transform 0.3s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .to-top:hover {
+    color: var(--text);
+  }
+
+  .to-top:hover span {
+    transform: translateY(-3px);
+  }
+}
+
+/* Heading reveal, shared by every section */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s ease, transform 0.8s var(--ease-out);
+}
+
+.js .reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* 4. Loader ================================================================ */
+
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-loader);
+  display: none; /* only shown when JS is running, so it can never trap the page */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 0 var(--gutter);
+  background: var(--bg);
+  transition: opacity var(--dur-base) ease, visibility var(--dur-base) ease;
+}
+
+.js .loader {
+  display: flex;
+}
+
+.loader.done {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-pill {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  background: var(--pill);
+  color: var(--pill-text);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.loader-count {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+.loader-msg {
+  min-height: 1.5em;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  text-align: center;
+  color: var(--muted);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.loader-msg.swap {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+/* 5. Hero ================================================================== */
+
+.hero {
+  position: relative;
+  min-height: calc(100vh - var(--header-h, 58px));
+  min-height: calc(100svh - var(--header-h, 58px));
+  display: grid;
+  place-items: center;
+  padding: 28px var(--gutter) 110px;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 35%, var(--hero-a) 0%, var(--bg) 68%);
+  border-bottom: 1px solid var(--line);
+  transition: background 0.6s ease;
+}
+
+/* Perspective grid floor */
+.hero-grid {
+  position: absolute;
+  left: -25%;
+  right: -25%;
+  bottom: -12%;
+  height: 70%;
+  background-image:
+    linear-gradient(var(--line-strong) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-strong) 1px, transparent 1px);
+  background-size: 64px 64px;
+  transform: perspective(520px) rotateX(64deg);
+  transform-origin: 50% 100%;
+  opacity: 0.55;
+  -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 92%);
+  mask-image: linear-gradient(to top, #000 10%, transparent 92%);
+  animation: grid-drift 9s linear infinite;
+  pointer-events: none;
+}
+
+.hero-visual {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+/* Three.js canvas. The orb is only the fallback when WebGL or the module is unavailable. */
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.hero-canvas.is-live {
+  opacity: 1;
+}
+
+.hero-canvas canvas {
+  display: block;
+}
+
+.orb {
+  width: min(40vw, 420px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--line-strong) 0%, var(--surface) 72%);
+  animation: float 6s ease-in-out infinite;
+}
+
+.has-3d .orb {
+  display: none;
+}
+
+/* The framed "window" that holds the greeting */
+.hero-frame {
+  position: relative;
+  z-index: 2;
+  width: min(1040px, 100%);
+  container-type: inline-size;
+  padding: clamp(18px, 3.4vw, 44px);
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--bg) 38%, transparent);
+  transition: background 0.6s ease, border-color 0.6s ease;
+}
+
+/* Giant YOO!: outlined until the cursor spotlight fills the letters */
+.hey {
+  position: relative;
+  width: fit-content;
+  margin-inline: auto;
+  font-family: var(--font-display);
+  font-size: clamp(88px, min(47cqw, 40svh), 380px);
+  line-height: 0.92;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--stroke);
+  user-select: none;
+}
+
+.hey::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: var(--hero-fill);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 0;
+  -webkit-mask-image: radial-gradient(circle 190px at var(--hx, 30%) var(--hy, 50%), #000 0%, #000 38%, transparent 100%);
+  mask-image: radial-gradient(circle 190px at var(--hx, 30%) var(--hy, 50%), #000 0%, #000 38%, transparent 100%);
+}
+
+.hero-card {
+  margin-top: clamp(14px, 2vw, 24px);
+  padding-top: clamp(14px, 2vw, 24px);
+  border-top: 1px dashed var(--line-strong);
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: clamp(16px, 3vw, 40px);
+  align-items: end;
+}
+
+.hero-name {
+  font-size: clamp(24px, 3.4vw, 42px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hero-kicker {
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.roller {
+  padding: 0.05em 0;
+  font-size: clamp(22px, 3.2vw, 42px);
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.char {
+  display: inline-block;
+  animation: char-in 0.7s var(--ease-out) both;
+}
+
+.char.out {
+  animation: char-out 0.45s ease-in both;
+}
+
+/* Hero controls */
+.social-rail {
+  position: absolute;
+  left: 5vw;
+  bottom: 5vh;
+  z-index: 3;
+  display: flex;
+  gap: 22px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.social-rail a {
+  color: var(--muted);
+  transition: color var(--dur-fast);
+}
+
+.social-rail a:hover {
+  color: var(--text);
+}
+
+.theme-toggle {
+  position: absolute;
+  left: 50%;
+  bottom: 4.2vh;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px 8px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  color: var(--text);
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.theme-switch {
+  position: relative;
+  width: 38px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--pill);
+}
+
+.theme-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--pill-text);
+  transition: transform 0.3s var(--ease-out);
+}
+
+[data-theme="paper"] .theme-knob {
+  transform: translateX(18px);
+}
+
+/* Entrance: hero pieces rise in once the loader is gone */
+.js .hero-frame,
+.js .social-rail,
+.js .resume-cta {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity var(--dur-slow) ease, transform var(--dur-slow) var(--ease-out),
+    background 0.6s ease, border-color 0.6s ease;
+}
+
+.js .theme-toggle {
+  opacity: 0;
+  transition: opacity var(--dur-slow) ease 0.3s;
+}
+
+.js body.ready .hero-frame,
+.js body.ready .social-rail,
+.js body.ready .resume-cta {
+  opacity: 1;
+  transform: none;
+}
+
+.js body.ready .theme-toggle {
+  opacity: 1;
+}
+
+.js body.ready .social-rail,
+.js body.ready .resume-cta {
+  transition-delay: 0.3s;
+}
+
+/* 6. Index: shared row component (Skills + Projects) =======================
+   A numbered row between dashed rules: big outlined title that fills in when
+   the row scrolls into view, with its details set beside it. */
+
+.index {
+  counter-reset: row;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px dashed var(--line-strong);
+}
+
+.index-row {
+  counter-increment: row;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 8px 24px;
+  align-items: center;
+  padding: clamp(18px, 2.4vw, 30px) 0;
+  border-top: 1px dashed var(--line-strong);
+}
+
+.index-row::before {
+  content: counter(row, decimal-leading-zero);
+  align-self: start;
+  padding-top: 0.5em;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.index-title {
+  --fill: var(--text);
+  font-family: var(--font-display);
+  font-size: clamp(30px, 5.4vw, 72px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--stroke);
+  background: linear-gradient(var(--fill), var(--fill)) no-repeat 0 0 / 100% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: background-size 1s var(--ease-out), -webkit-text-stroke-color 0.6s ease 0.6s;
+}
+
+.index-body {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  min-width: 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.index-body a {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  transition: color var(--dur-fast);
+}
+
+.index-body a:hover {
+  color: var(--accent);
+}
+
+/* A small annotation next to a skill, e.g. Java: "mother tongue" */
+.badge {
+  margin-left: 6px;
+  padding: 2px 7px;
+  border: 1px dashed var(--accent);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  vertical-align: 2px;
+  white-space: nowrap;
+}
+
+/* List styles used inside rows */
+.slash-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+}
+
+.slash-list li:not(:last-child)::after {
+  content: "/";
+  margin-left: 18px;
+  color: var(--line-strong);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Tags: small dashed "labels" with an accent diamond; they lift and fill on hover */
+.tags {
+  gap: 8px;
+}
+
+.tags li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 11px 6px 9px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 6px;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: default;
+}
+
+.tags li::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background: var(--accent);
+  transform: rotate(45deg);
+  transition: background var(--dur-fast), transform 0.3s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .tags li {
+    transition: color var(--dur-fast), background var(--dur-fast), border-color var(--dur-fast),
+      translate 0.25s var(--ease-out), rotate 0.25s var(--ease-out);
+  }
+
+  .tags li:hover {
+    border-style: solid;
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+    translate: 0 -3px;
+    rotate: -2deg;
+  }
+
+  .tags li:hover::before {
+    background: var(--on-accent);
+    transform: rotate(225deg);
+  }
+}
+
+/* Reveal states (only when JS is running) */
+.js .index-title {
+  background-size: 0% 100%;
+}
+
+.js .index-row.in .index-title {
+  background-size: 100% 100%;
+  -webkit-text-stroke-color: transparent;
+}
+
+.js .index-body > *,
+.js .index-body li {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--dur-base) ease, transform var(--dur-base) ease, color var(--dur-fast);
+}
+
+.js .index-row.in .index-body > * {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.3s;
+}
+
+.js .index-row.in .index-body li {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(var(--i, 0) * 45ms + 300ms);
+}
+
+/* Tags stagger in with a keyframe animation rather than a delayed transition,
+   so once they have appeared their hover response is instant. */
+.js .index-row.in .tags li {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0s;
+  animation: tag-in 0.5s var(--ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 45ms + 300ms);
+}
+
+@keyframes tag-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.92); }
+}
+
+/* The wrapper lists must not fade twice: only their items do */
+.js .index-body > ul {
+  opacity: 1;
+  transform: none;
+}
+
+@media (hover: hover) {
+  .index-row:hover .index-title {
+    --fill: var(--accent);
+  }
+}
+
+/* 7. About ================================================================= */
+
+.lead {
+  max-width: 820px;
+  font-size: clamp(20px, 2.6vw, 32px);
+  line-height: 1.45;
+  color: var(--text);
+}
+
+/* The bio lights up word by word as you scroll through it */
+.js .lead .word {
+  opacity: 0.18;
+  transition: opacity 0.35s ease;
+}
+
+.js .lead .word.lit {
+  opacity: 1;
+}
+
+.more {
+  margin-top: 32px;
+  font-weight: 600;
+}
+
+.note {
+  margin-top: 10px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+/* 8. Education: a road trip ================================================
+   The car drives the road as you scroll; each school is a stop. */
+
+.journey {
+  position: relative;
+  padding: 8px 0 24px;
+}
+
+.journey-road {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.road-edge,
+.road-surface,
+.road-dash {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.road-edge {
+  stroke: var(--line-strong);
+  stroke-width: 50;
+}
+
+.road-surface {
+  stroke: var(--surface);
+  stroke-width: 46;
+}
+
+.road-dash {
+  stroke: var(--muted);
+  stroke-width: 2;
+  stroke-dasharray: 10 14;
+  opacity: 0.8;
+}
+
+.pin {
+  fill: var(--bg);
+  stroke: var(--line-strong);
+  stroke-width: 2;
+  transition: fill 0.4s ease, stroke 0.4s ease;
+}
+
+.pin.reached {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.car {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
+}
+
+.car-body {
+  fill: var(--accent);
+}
+
+.car-glass {
+  fill: var(--bg);
+  opacity: 0.85;
+}
+
+.car-wheel {
+  fill: var(--text);
+  opacity: 0.85;
+}
+
+.car-light {
+  fill: var(--pill-text);
+}
+
+.stops {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+  padding: 20px 0 40px;
+}
+
+.stop {
+  width: calc(50% - 64px);
+  padding: 22px 24px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  opacity: 0.5;
+  transform: translateY(8px);
+  transition: opacity var(--dur-base) ease, transform var(--dur-base) ease, border-color var(--dur-base) ease;
+}
+
+.stop:nth-child(even) {
+  align-self: flex-end;
+}
+
+.stop.reached {
+  opacity: 1;
+  transform: none;
+  border-color: var(--accent);
+}
+
+.stop .year {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.stop h3 {
+  margin: 6px 0 4px;
+  font-size: 20px;
+}
+
+.stop .org {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.stop p:not(.org) {
+  margin-top: 8px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+/* 9. Contact ===============================================================
+   Each row is one big link: brand mark, label, value. The mark pops in as the
+   row scrolls into view and has its own motion on hover. */
+
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px dashed var(--line-strong);
+}
+
+.contact-row {
+  border-bottom: 1px dashed var(--line-strong);
+}
+
+.contact-link {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 8rem) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0;
+  font-size: 17px;
+  transition: color var(--dur-fast);
+}
+
+.contact-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  transition: background var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast);
+}
+
+.contact-icon svg {
+  width: 24px;
+  height: 24px;
+  overflow: visible;
+}
+
+.contact-label {
+  color: var(--muted);
+}
+
+.contact-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.contact-arrow {
+  display: inline-block;
+  color: var(--muted);
+  transition: transform 0.3s var(--ease-out), color var(--dur-fast);
+}
+
+@media (hover: hover) {
+  .contact-link:hover .contact-icon {
+    background: var(--pill);
+    border-color: var(--pill);
+    color: var(--pill-text);
+  }
+
+  .contact-link:hover .contact-arrow {
+    color: var(--accent);
+    transform: translate(4px, -4px);
+  }
+
+  /* a different motion per brand */
+  .brand-github:hover .contact-icon svg {
+    animation: icon-tilt 0.7s var(--ease-out);
+  }
+
+  .brand-linkedin:hover .contact-icon svg {
+    animation: icon-hop 0.6s var(--ease-out);
+  }
+
+  .brand-leetcode:hover .contact-icon svg {
+    animation: icon-spin 0.8s var(--ease-out);
+  }
+
+  .brand-email:hover .contact-icon svg {
+    animation: icon-hop 0.6s var(--ease-out);
+  }
+
+  .brand-email:hover .flap {
+    animation: flap-open 0.6s var(--ease-out) forwards;
+    transform-origin: 12px 7.5px;
+  }
+}
+
+/* The mark pops in as the row reveals (stagger comes from --i, set by script.js) */
+.js .contact-row {
+  opacity: 0;
+  transform: translateX(-14px);
+  transition: opacity 0.6s ease, transform 0.6s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+
+.js .contact-row.in {
+  opacity: 1;
+  transform: none;
+}
+
+.js .contact-row .contact-icon svg {
+  transform: scale(0.4) rotate(-40deg);
+  opacity: 0;
+}
+
+.js .contact-row.in .contact-icon svg {
+  animation: icon-pop 0.7s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 200ms);
+}
+
+@keyframes icon-pop {
+  from { transform: scale(0.4) rotate(-40deg); opacity: 0; }
+  60% { transform: scale(1.18) rotate(6deg); opacity: 1; }
+  to { transform: none; opacity: 1; }
+}
+
+@keyframes icon-tilt {
+  0%, 100% { transform: rotate(0); }
+  30% { transform: rotate(-16deg) scale(1.15); }
+  60% { transform: rotate(10deg) scale(1.1); }
+}
+
+@keyframes icon-hop {
+  0%, 100% { transform: translateY(0); }
+  35% { transform: translateY(-5px) scale(1.12); }
+  65% { transform: translateY(0) scale(0.95); }
+}
+
+@keyframes icon-spin {
+  from { transform: rotate(0) scale(1); }
+  50% { transform: rotate(200deg) scale(1.15); }
+  to { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes flap-open {
+  to { transform: scaleY(-0.6) translateY(1px); }
+}
+
+/* 10. Resume =============================================================== */
+
+/* Call-to-action: the one filled button in the hero */
+.resume-cta {
+  position: absolute;
+  right: 5vw;
+  bottom: 5vh;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  animation: cta-ping 3.2s ease-out 2.5s infinite;
+}
+
+.resume-cta::after {
+  content: "\2197";
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+/* Viewer: opens over the page, no new tab. script.js marks the page behind it inert. */
+.resume-modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: grid;
+  place-items: center;
+  padding: 3vh 3vw;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.resume-modal[hidden] {
+  display: none;
+}
+
+.resume-modal.open {
+  opacity: 1;
+}
+
+.resume-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(980px, 100%);
+  height: 100%;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+  transform: translateY(12px);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.resume-modal.open .resume-panel {
+  transform: none;
+}
+
+.resume-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px dashed var(--line-strong);
+}
+
+.resume-title {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.resume-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.resume-download,
+.resume-close {
+  padding: 8px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+
+.resume-download:hover,
+.resume-close:hover {
+  background: var(--pill);
+  color: var(--pill-text);
+}
+
+.resume-frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: #fff;
+}
+
+/* Keyframes ================================================================ */
+
+@keyframes grid-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 0 64px, 0 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes char-in {
+  from { transform: translateY(105%); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@keyframes char-out {
+  to { transform: translateY(-105%); opacity: 0; }
+}
+
+@keyframes cta-ping {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
+  60%, 100% { box-shadow: 0 0 0 14px transparent; }
+}
+
+/* 11. Responsive =========================================================== */
+
+@media (max-width: 720px) {
+  /* nav becomes a drop-down */
+  .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav.open {
+    display: flex;
+  }
+
+  .nav a {
+    padding: 14px var(--gutter);
+    font-size: 16px;
+  }
+
+  .nav .nav-resume {
+    margin: 8px var(--gutter) 14px;
+    padding: 12px 16px;
+    text-align: center;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+
+  .section {
+    padding: 72px 0;
+  }
+
+  /* hero */
+  .hero {
+    padding-top: 24px;
+    padding-bottom: 150px;
+  }
+
+  .hero-card {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-grid {
+    height: 55%;
+  }
+
+  .social-rail {
+    left: var(--gutter);
+    bottom: 76px;
+    gap: 14px;
+    font-size: 11px;
+  }
+
+  .resume-cta {
+    right: var(--gutter);
+    bottom: 76px;
+  }
+
+  .theme-toggle {
+    bottom: 22px;
+  }
+
+  /* contact rows: icon, then label over value */
+  .contact-link {
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    gap: 4px 14px;
+  }
+
+  .contact-icon {
+    grid-row: 1 / span 2;
+  }
+
+  .contact-label {
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .contact-value {
+    grid-column: 2;
+    text-align: left;
+    font-size: 16px;
+  }
+
+  .contact-arrow {
+    grid-row: 1 / span 2;
+    grid-column: 3;
+  }
+
+  /* index rows stack: number | (title over body) */
+  .index-row {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .index-row::before {
+    grid-row: 1 / span 2;
+  }
+
+  .index-title,
+  .index-body {
+    grid-column: 2;
+  }
+
+  /* road moves to the left edge, stops sit beside it */
+  .stops {
+    gap: 40px;
+  }
+
+  .stop,
+  .stop:nth-child(even) {
+    width: auto;
+    align-self: stretch;
+    margin-left: 64px;
+  }
+}
+
+/* 12. Reduced motion =======================================================
+   One rule instead of per-component overrides. script.js still adds the
+   .in / .ready / .lit states immediately, so nothing is left hidden. */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+
+  .js .contact-row,
+  .js .contact-row .contact-icon svg,
+  .js .reveal,
+  .js .hero-frame,
+  .js .social-rail,
+  .js .resume-cta,
+  .js .theme-toggle {
+    opacity: 1;
+    transform: none;
+  }
+}
