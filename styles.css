@@ -457,23 +457,26 @@ main {
   transition: background 0.6s ease, border-color 0.6s ease;
 }
 
-/* Giant YOO!: outlined until the cursor spotlight fills the letters */
-.hey {
+/* Headline: outlined until the cursor spotlight fills the letters */
+.hero-headline {
+  display: grid;
+  font-family: var(--font-display);
+  font-size: clamp(56px, min(25cqw, 25svh), 230px);
+  line-height: 0.96;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.hero-line {
   position: relative;
   width: fit-content;
-  margin-inline: auto;
-  font-family: var(--font-display);
-  font-size: clamp(88px, min(47cqw, 40svh), 380px);
-  line-height: 0.92;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   white-space: nowrap;
   color: transparent;
   -webkit-text-stroke: 2px var(--stroke);
   user-select: none;
 }
 
-.hey::after {
+.hero-line::after {
   content: attr(data-text);
   position: absolute;
   inset: 0;
@@ -484,52 +487,6 @@ main {
   -webkit-text-stroke: 0;
   -webkit-mask-image: radial-gradient(circle 190px at var(--hx, 30%) var(--hy, 50%), #000 0%, #000 38%, transparent 100%);
   mask-image: radial-gradient(circle 190px at var(--hx, 30%) var(--hy, 50%), #000 0%, #000 38%, transparent 100%);
-}
-
-.hero-card {
-  margin-top: clamp(14px, 2vw, 24px);
-  padding-top: clamp(14px, 2vw, 24px);
-  border-top: 1px dashed var(--line-strong);
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: clamp(16px, 3vw, 40px);
-  align-items: end;
-}
-
-.hero-name {
-  font-size: clamp(24px, 3.4vw, 42px);
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.hero-kicker {
-  margin-bottom: 4px;
-  font-size: 14px;
-  font-weight: 300;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.roller {
-  padding: 0.05em 0;
-  font-size: clamp(22px, 3.2vw, 42px);
-  font-weight: 800;
-  line-height: 1.1;
-  text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.char {
-  display: inline-block;
-  animation: char-in 0.7s var(--ease-out) both;
-}
-
-.char.out {
-  animation: char-out 0.45s ease-in both;
 }
 
 /* Hero controls */
@@ -1273,15 +1230,6 @@ main {
   50% { transform: translateY(-14px); }
 }
 
-@keyframes char-in {
-  from { transform: translateY(105%); opacity: 0; }
-  to { transform: none; opacity: 1; }
-}
-
-@keyframes char-out {
-  to { transform: translateY(-105%); opacity: 0; }
-}
-
 @keyframes cta-ping {
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
   60%, 100% { box-shadow: 0 0 0 14px transparent; }
@@ -1331,10 +1279,6 @@ main {
   .hero {
     padding-top: 24px;
     padding-bottom: 150px;
-  }
-
-  .hero-card {
-    grid-template-columns: 1fr;
   }
 
   .hero-grid {

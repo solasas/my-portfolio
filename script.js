@@ -249,23 +249,15 @@ const nav = {
   },
 };
 
-/** Hero: Three.js scene (isolated, optional), spotlight word and role roller. */
+/** Hero: isolated Three.js scene and the spotlight name. */
 const hero = {
   name: "hero",
-  ROLES: ["Software Developer", "Fresher SDE", "Full-Stack Builder", "Problem Solver"],
-  STAGGER: 28, // ms between letters
-  HOLD: 2600, // ms each role stays
 
   init() {
     this.spotlight();
-    bus.on(EVENTS.ready, () => {
-      this.roller();
-      this.scene();
-    }, { once: true });
-    if (document.body.classList.contains("ready")) {
-      this.roller();
-      this.scene();
-    }
+    const onReady = () => this.scene();
+    if (document.body.classList.contains("ready")) onReady();
+    else bus.on(EVENTS.ready, onReady, { once: true });
   },
 
   /** The WebGL scene is a separate module loaded on demand. If the CDN, the
@@ -281,28 +273,36 @@ const hero = {
     }
   },
 
-  /** The cursor lights up the YOO! letters; with no pointer the light wanders. */
+  /** One virtual light, aimed at each headline line from its own position.
+   *  It follows the cursor; with no pointer it wanders on its own. */
   spotlight() {
     const stage = $("#hero");
-    const word = $("#hey");
-    if (!stage || !word) return;
+    const frame = $(".hero-frame");
+    const lines = $$(".hero-line");
+    if (!stage || !frame || !lines.length) return;
 
-    const setSpot = (x, y) => {
-      word.style.setProperty("--hx", x * 100 + "%");
-      word.style.setProperty("--hy", y * 100 + "%");
+    const aim = (clientX, clientY) =>
+      lines.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        el.style.setProperty("--hx", ((clientX - r.left) / r.width) * 100 + "%");
+        el.style.setProperty("--hy", ((clientY - r.top) / r.height) * 100 + "%");
+      });
+
+    const aimInFrame = (fx, fy) => {
+      const r = frame.getBoundingClientRect();
+      aim(r.left + r.width * fx, r.top + r.height * fy);
     };
 
     let lastMove = 0;
     let visible = true;
 
     stage.addEventListener("pointermove", (e) => {
-      const r = word.getBoundingClientRect();
       lastMove = performance.now();
-      setSpot((e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height);
+      aim(e.clientX, e.clientY);
     });
 
     if (REDUCED_MOTION) {
-      setSpot(0.5, 0.5);
+      aimInFrame(0.5, 0.45);
       return;
     }
 
@@ -316,49 +316,9 @@ const hero = {
       requestAnimationFrame(wander);
       if (!visible || t - lastMove < 1800) return;
       const s = t / 1000;
-      setSpot(0.5 + Math.sin(s * 0.7) * 0.42, 0.5 + Math.sin(s * 1.3 + 1.2) * 0.3);
+      aimInFrame(0.5 + Math.sin(s * 0.7) * 0.42, 0.42 + Math.sin(s * 1.3 + 1.2) * 0.12);
     };
     requestAnimationFrame(wander);
-  },
-
-  /** Roles roll out letter by letter, then the next rolls in. */
-  roller() {
-    const el = $("#roller");
-    if (!el) return;
-    const { ROLES, STAGGER, HOLD } = this;
-
-    if (REDUCED_MOTION) {
-      el.textContent = ROLES[0];
-      return;
-    }
-
-    const fill = (text) => {
-      el.textContent = "";
-      el.setAttribute("aria-label", text);
-      Array.from(text).forEach((ch, i) => {
-        const span = document.createElement("span");
-        span.className = "char";
-        span.setAttribute("aria-hidden", "true");
-        span.textContent = ch === " " ? " " : ch;
-        span.style.animationDelay = i * STAGGER + "ms";
-        el.appendChild(span);
-      });
-    };
-
-    let index = 0;
-    fill(ROLES[index]);
-
-    setInterval(() => {
-      const chars = $$(".char", el);
-      chars.forEach((c, i) => {
-        c.classList.add("out");
-        c.style.animationDelay = i * STAGGER + "ms";
-      });
-      setTimeout(() => {
-        index = (index + 1) % ROLES.length;
-        fill(ROLES[index]);
-      }, chars.length * STAGGER + 450);
-    }, HOLD);
   },
 };
 
