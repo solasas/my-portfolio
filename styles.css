@@ -654,21 +654,6 @@ main {
   color: var(--accent);
 }
 
-/* A small annotation next to a skill, e.g. Java: "mother tongue" */
-.badge {
-  margin-left: 6px;
-  padding: 2px 7px;
-  border: 1px dashed var(--accent);
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent);
-  vertical-align: 2px;
-  white-space: nowrap;
-}
-
 /* List styles used inside rows */
 .slash-list {
   display: flex;
