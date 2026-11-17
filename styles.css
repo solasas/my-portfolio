@@ -652,50 +652,6 @@ main {
   color: var(--text);
 }
 
-.theme-toggle {
-  position: absolute;
-  left: 50%;
-  bottom: 4.2vh;
-  transform: translateX(-50%);
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 10px 8px 16px;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--bg) 70%, transparent);
-  color: var(--text);
-  font: inherit;
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.theme-switch {
-  position: relative;
-  width: 38px;
-  height: 20px;
-  border-radius: 999px;
-  background: var(--pill);
-}
-
-.theme-knob {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--pill-text);
-  transition: transform 0.3s var(--ease-out);
-}
-
-[data-theme="paper"] .theme-knob {
-  transform: translateX(18px);
-}
-
 /* Entrance: hero pieces rise in once the loader is gone */
 .js .hero-frame,
 .js .social-rail,
@@ -706,20 +662,11 @@ main {
     background 0.6s ease, border-color 0.6s ease;
 }
 
-.js .theme-toggle {
-  opacity: 0;
-  transition: opacity var(--dur-slow) ease 0.3s;
-}
-
 .js body.ready .hero-frame,
 .js body.ready .social-rail,
 .js body.ready .resume-cta {
   opacity: 1;
   transform: none;
-}
-
-.js body.ready .theme-toggle {
-  opacity: 1;
 }
 
 .js body.ready .social-rail,
@@ -1429,7 +1376,7 @@ main {
   /* hero */
   .hero {
     padding-top: 24px;
-    padding-bottom: 150px;
+    padding-bottom: 110px;
   }
 
   .hero-grid {
@@ -1438,18 +1385,14 @@ main {
 
   .social-rail {
     left: var(--gutter);
-    bottom: 76px;
+    bottom: 28px;
     gap: 14px;
     font-size: 11px;
   }
 
   .resume-cta {
     right: var(--gutter);
-    bottom: 76px;
-  }
-
-  .theme-toggle {
-    bottom: 22px;
+    bottom: 28px;
   }
 
   /* contact rows: icon, then label over value */
@@ -1525,8 +1468,7 @@ main {
   .js .header-bar,
   .js .hero-frame,
   .js .social-rail,
-  .js .resume-cta,
-  .js .theme-toggle {
+  .js .resume-cta {
     opacity: 1;
     transform: none;
   }

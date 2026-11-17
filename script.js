@@ -172,15 +172,13 @@ const theme = {
   name: "theme",
   init() {
     const root = document.documentElement;
-    const toggles = $$("[data-theme-toggle]"); // the hero switch and the header button
-    const label = $("#theme-name");
+    const toggles = $$("[data-theme-toggle]"); // the header button
     const meta = $('meta[name="theme-color"]');
     if (!toggles.length) return;
 
     const apply = (name, announce) => {
       root.setAttribute("data-theme", name);
       toggles.forEach((t) => t.setAttribute("aria-pressed", String(name === "paper")));
-      if (label) label.textContent = name === "paper" ? "Paper" : "Ink";
       if (meta) meta.setAttribute("content", name === "paper" ? "#ede7da" : "#100e0c");
       if (announce) bus.emit(EVENTS.theme, { theme: name });
     };
