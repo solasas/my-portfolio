@@ -160,6 +160,9 @@ const header = {
     measure();
     if ("ResizeObserver" in window) new ResizeObserver(measure).observe(el);
     else window.addEventListener("resize", measure);
+
+    // Tightens into a capsule after the first scroll.
+    frameLoop.subscribe(() => el.classList.toggle("scrolled", window.scrollY > 24));
   },
 };
 
@@ -219,32 +222,62 @@ const nav = {
     });
 
     // Scroll-spy: the section crossing the middle of the viewport is "current"
-    if (!("IntersectionObserver" in window)) return;
     const links = new Map($$('a[href^="#"]', menu).map((a) => [a.getAttribute("href").slice(1), a]));
+
+    // Indicator pill: glides to the hovered link, otherwise rests on the current section.
+    const indicator = $(".nav-indicator", menu);
+    let hovered = null;
+    const syncIndicator = () => {
+      if (!indicator) return;
+      const target = hovered || $('a[aria-current="true"]', menu);
+      indicator.classList.toggle("on", !!target);
+      if (!target) return;
+      indicator.style.setProperty("--x", target.offsetLeft + "px");
+      indicator.style.setProperty("--w", target.offsetWidth + "px");
+    };
+    links.forEach((a) => {
+      const enter = () => ((hovered = a), syncIndicator());
+      const leave = () => ((hovered = null), syncIndicator());
+      a.addEventListener("pointerenter", enter);
+      a.addEventListener("pointerleave", leave);
+      a.addEventListener("focus", enter);
+      a.addEventListener("blur", leave);
+    });
+    window.addEventListener("resize", syncIndicator);
+    if (document.fonts?.ready) document.fonts.ready.then(syncIndicator);
+
+    const setCurrent = (currentId) => {
+      links.forEach((a, id) => {
+        if (id === currentId) a.setAttribute("aria-current", "true");
+        else a.removeAttribute("aria-current");
+      });
+      syncIndicator();
+    };
+
+    // Scroll-spy: the section crossing the middle of the viewport is "current"
+    if (!("IntersectionObserver" in window)) return;
     const spy = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          links.forEach((a, id) => {
-            if (id === entry.target.id) a.setAttribute("aria-current", "true");
-            else a.removeAttribute("aria-current");
-          });
-        });
+        entries.forEach((entry) => entry.isIntersecting && setCurrent(entry.target.id));
       },
       { rootMargin: "-45% 0px -50% 0px" }
     );
     $$("main > section").forEach((s) => links.has(s.id) && spy.observe(s));
 
     // The last section is short, so it never reaches the middle of the screen:
-    // at the very bottom of the page it counts as current.
+    // at the very bottom of the page it counts as current. Back up in the hero,
+    // nothing is.
     const lastId = $$("main > section").pop()?.id;
+    const firstSection = $("main > section");
+    let edge = "";
     frameLoop.subscribe(() => {
       const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
-      if (!atBottom || !lastId) return;
-      links.forEach((a, id) => {
-        if (id === lastId) a.setAttribute("aria-current", "true");
-        else a.removeAttribute("aria-current");
-      });
+      const inHero = firstSection && firstSection.getBoundingClientRect().top > window.innerHeight * 0.55;
+      const now = atBottom ? "bottom" : inHero ? "hero" : "";
+      if (now === edge) return;
+      edge = now;
+      if (now === "bottom" && lastId) setCurrent(lastId);
+      if (now === "hero") setCurrent(null);
     });
   },
 };

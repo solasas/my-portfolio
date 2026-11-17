@@ -192,32 +192,73 @@ h3 {
 
 /* 3. Layout ================================================================ */
 
+/* Header: an open bar at the top of the page that tightens into a floating
+   capsule once you scroll. The outer element keeps a constant height (the hero
+   is sized from it), only the inner bar changes shape. */
 .site-header {
   position: sticky;
   top: 0;
   z-index: var(--z-header);
+  padding: 10px var(--gutter);
+  pointer-events: none; /* the gaps beside the capsule stay click-through */
+}
+
+.header-bar {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px var(--gutter);
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
+  gap: 16px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  pointer-events: auto;
+  transition: max-width 0.6s var(--ease-out), background 0.4s ease, border-color 0.4s ease,
+    box-shadow 0.4s ease, opacity 0.6s ease, transform 0.6s var(--ease-out);
+}
+
+.site-header.scrolled .header-bar {
+  max-width: 860px;
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  border-color: var(--line-strong);
+  box-shadow: 0 14px 40px -18px rgba(0, 0, 0, 0.55);
+}
+
+/* Entrance: drops in once the loader is gone */
+.js .header-bar {
+  opacity: 0;
+  transform: translateY(-14px);
+}
+
+.js body.ready .header-bar {
+  opacity: 1;
+  transform: none;
 }
 
 .logo {
+  padding: 7px 12px;
+  font-size: 15px;
   font-weight: 700;
-  font-size: 16px;
+  white-space: nowrap;
 }
 
 .nav {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 2px;
   font-size: 14px;
 }
 
 .nav a {
+  position: relative;
+  z-index: 1;
+  padding: 7px 12px;
+  border-radius: 999px;
   color: var(--muted);
   transition: color var(--dur-fast);
 }
@@ -227,24 +268,57 @@ h3 {
   color: var(--text);
 }
 
-.nav .nav-resume {
-  padding: 6px 14px;
-  border: 1px solid var(--text);
+/* The pill that glides to the hovered link and rests on the current section.
+   Positioned by script.js through --x and --w. */
+.nav-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--w, 0px);
   border-radius: 999px;
-  color: var(--text);
+  background: color-mix(in srgb, var(--text) 9%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text) 10%, transparent);
+  opacity: 0;
+  transform: translateX(var(--x, 0px));
+  transition: transform 0.45s var(--ease-out), width 0.45s var(--ease-out), opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.nav-indicator.on {
+  opacity: 1;
+}
+
+.nav .nav-resume {
+  margin-left: 10px;
+  padding: 7px 16px;
+  background: var(--pill);
+  color: var(--pill-text);
   font-weight: 600;
   transition: background var(--dur-fast), color var(--dur-fast);
 }
 
+.nav .nav-resume span {
+  display: inline-block;
+  transition: transform 0.3s var(--ease-out);
+}
+
 .nav .nav-resume:hover {
-  background: var(--pill);
-  color: var(--pill-text);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+@media (hover: hover) {
+  .nav .nav-resume:hover span {
+    transform: translate(2px, -2px);
+  }
 }
 
 .menu-toggle {
   display: none;
   flex-direction: column;
   gap: 5px;
+  margin-right: 6px;
   padding: 6px;
   background: none;
   border: 0;
@@ -255,7 +329,21 @@ h3 {
   display: block;
   width: 22px;
   height: 2px;
+  border-radius: 2px;
   background: var(--text);
+  transition: transform 0.35s var(--ease-out), opacity var(--dur-fast);
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 main {
@@ -1226,29 +1314,43 @@ main {
   /* nav becomes a drop-down */
   .nav {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 8px);
     left: 0;
     right: 0;
     display: none;
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    background: var(--bg);
-    border-bottom: 1px solid var(--line);
+    padding: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 22px;
+    box-shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.6);
   }
 
   .nav.open {
     display: flex;
+    animation: nav-drop 0.3s var(--ease-out);
+  }
+
+  @keyframes nav-drop {
+    from { opacity: 0; transform: translateY(-8px); }
   }
 
   .nav a {
-    padding: 14px var(--gutter);
+    padding: 12px 14px;
+    border-radius: 14px;
     font-size: 16px;
   }
 
+  .nav-indicator {
+    display: none;
+  }
+
   .nav .nav-resume {
-    margin: 8px var(--gutter) 14px;
+    margin: 8px 0 0;
     padding: 12px 16px;
+    border-radius: 14px;
     text-align: center;
   }
 
@@ -1356,6 +1458,7 @@ main {
   .js .contact-row,
   .js .contact-row .contact-icon svg,
   .js .reveal,
+  .js .header-bar,
   .js .hero-frame,
   .js .social-rail,
   .js .resume-cta,
