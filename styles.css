@@ -220,7 +220,7 @@ h3 {
 }
 
 .site-header.scrolled .header-bar {
-  max-width: 860px;
+  max-width: 940px;
   background: color-mix(in srgb, var(--surface) 78%, transparent);
   -webkit-backdrop-filter: blur(14px) saturate(1.4);
   backdrop-filter: blur(14px) saturate(1.4);
@@ -251,6 +251,7 @@ h3 {
   display: flex;
   align-items: center;
   gap: 2px;
+  margin-left: auto; /* links and tools group on the right */
   font-size: 14px;
 }
 
@@ -292,6 +293,7 @@ h3 {
 .nav .nav-resume {
   margin-left: 10px;
   padding: 7px 16px;
+  white-space: nowrap;
   background: var(--pill);
   color: var(--pill-text);
   font-weight: 600;
@@ -306,6 +308,57 @@ h3 {
 .nav .nav-resume:hover {
   background: var(--accent);
   color: var(--on-accent);
+}
+
+/* Header tools: theme button and social icons, after a hairline divider */
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: -4px;
+  padding-left: 10px;
+  border-left: 1px solid var(--line-strong);
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color var(--dur-fast), background var(--dur-fast);
+}
+
+.icon-btn svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.5s var(--ease-out);
+}
+
+.icon-btn:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--text) 9%, transparent);
+}
+
+/* the half-moon flips over when the theme does */
+.header-theme[aria-pressed="true"] svg {
+  transform: rotate(180deg);
+}
+
+/* Tablet widths: the links need the room, so only the theme button stays
+   (the phone layout below brings the social icons back) */
+@media (min-width: 721px) and (max-width: 900px) {
+  .nav a {
+    padding-inline: 9px;
+  }
+
+  .header-tools a {
+    display: none;
+  }
 }
 
 @media (hover: hover) {
@@ -1345,6 +1398,17 @@ main {
 
   .nav-indicator {
     display: none;
+  }
+
+  /* tools sit on the bar beside the menu button; the logo takes the slack */
+  .logo {
+    margin-right: auto;
+  }
+
+  .header-tools {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
   }
 
   .nav .nav-resume {

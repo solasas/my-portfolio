@@ -172,22 +172,22 @@ const theme = {
   name: "theme",
   init() {
     const root = document.documentElement;
-    const toggle = $("#theme-toggle");
+    const toggles = $$("[data-theme-toggle]"); // the hero switch and the header button
     const label = $("#theme-name");
     const meta = $('meta[name="theme-color"]');
-    if (!toggle || !label) return;
+    if (!toggles.length) return;
 
     const apply = (name, announce) => {
       root.setAttribute("data-theme", name);
-      toggle.setAttribute("aria-pressed", String(name === "paper"));
-      label.textContent = name === "paper" ? "Paper" : "Ink";
+      toggles.forEach((t) => t.setAttribute("aria-pressed", String(name === "paper")));
+      if (label) label.textContent = name === "paper" ? "Paper" : "Ink";
       if (meta) meta.setAttribute("content", name === "paper" ? "#ede7da" : "#100e0c");
       if (announce) bus.emit(EVENTS.theme, { theme: name });
     };
 
     apply(root.getAttribute("data-theme") === "paper" ? "paper" : "ink", false);
 
-    toggle.addEventListener("click", () => {
+    const onToggle = () => {
       const next = root.getAttribute("data-theme") === "paper" ? "ink" : "paper";
       apply(next, true);
       try {
@@ -195,7 +195,8 @@ const theme = {
       } catch (e) {
         /* storage unavailable: the choice just won't persist */
       }
-    });
+    };
+    toggles.forEach((t) => t.addEventListener("click", onToggle));
   },
 };
 
