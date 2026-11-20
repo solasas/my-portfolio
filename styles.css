@@ -742,6 +742,13 @@ main {
   color: var(--accent);
 }
 
+/* Several links on one row (e.g. web + mobile repos) */
+.index-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+}
+
 /* List styles used inside rows */
 .slash-list {
   display: flex;
