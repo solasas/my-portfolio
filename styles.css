@@ -689,31 +689,8 @@ main {
   mask-image: radial-gradient(circle 190px at var(--hx, 30%) var(--hy, 50%), #000 0%, #000 38%, transparent 100%);
 }
 
-/* Hero controls */
-.social-rail {
-  position: absolute;
-  left: 5vw;
-  bottom: 5vh;
-  z-index: 3;
-  display: flex;
-  gap: 22px;
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.social-rail a {
-  color: var(--muted);
-  transition: color var(--dur-fast);
-}
-
-.social-rail a:hover {
-  color: var(--text);
-}
-
 /* Entrance: hero pieces rise in once the loader is gone */
 .js .hero-frame,
-.js .social-rail,
 .js .resume-cta {
   opacity: 0;
   transform: translateY(18px);
@@ -722,13 +699,11 @@ main {
 }
 
 .js body.ready .hero-frame,
-.js body.ready .social-rail,
 .js body.ready .resume-cta {
   opacity: 1;
   transform: none;
 }
 
-.js body.ready .social-rail,
 .js body.ready .resume-cta {
   transition-delay: 0.3s;
 }
@@ -1463,13 +1438,6 @@ main {
     height: 55%;
   }
 
-  .social-rail {
-    left: var(--gutter);
-    bottom: 28px;
-    gap: 14px;
-    font-size: 11px;
-  }
-
   .resume-cta {
     right: var(--gutter);
     bottom: 28px;
@@ -1547,7 +1515,6 @@ main {
   .js .reveal,
   .js .header-bar,
   .js .hero-frame,
-  .js .social-rail,
   .js .resume-cta {
     opacity: 1;
     transform: none;
