@@ -483,6 +483,39 @@ main {
   visibility: hidden;
 }
 
+.loader-hello {
+  min-height: 1.4em;
+  margin-bottom: 6px;
+  padding: 0 0.15em;
+  font-family: "Dancing Script", cursive;
+  font-size: clamp(52px, 11vw, 104px);
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--text);
+}
+
+/* Apple-style "hello": each greeting is written on left to right, like a pen stroke */
+.loader-hello.write {
+  animation: hello-write 0.5s cubic-bezier(0.45, 0, 0.25, 1) both;
+}
+
+.loader-hello.out {
+  opacity: 0;
+  transition: opacity 0.14s ease;
+}
+
+@keyframes hello-write {
+  from {
+    clip-path: inset(0 100% 0 0);
+    filter: blur(2px);
+  }
+  to {
+    clip-path: inset(0 -10% 0 -10%);
+    filter: blur(0);
+  }
+}
+
 .loader-pill {
   display: flex;
   align-items: center;

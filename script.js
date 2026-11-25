@@ -104,13 +104,43 @@ const loader = {
     [92, "Ready. Mostly."],
   ],
 
+  // "Hello" in a few languages, cycled while the count runs
+  GREETINGS: [
+    ["en", "hello"],
+    ["te", "నమస్కారం"],
+    ["hi", "नमस्ते"],
+    ["es", "hola"],
+    ["fr", "bonjour"],
+    ["ja", "こんにちは"],
+    ["ta", "வணக்கம்"],
+    ["ml", "നമസ്കാരം"],
+    ["kn", "ನಮಸ್ಕಾರ"],
+  ],
+
   init() {
     const count = $("#loader-count");
     const msg = $("#loader-msg");
+    const hello = $("#loader-hello");
     if (!count || !msg) return markReady();
 
     const lines = this.LINES;
+    const greetings = this.GREETINGS;
     let shown = 0;
+    let greeted = 0;
+
+    const greet = (i) => {
+      if (!hello || i === greeted) return;
+      greeted = i;
+      // fade the old word out, then write the new one on
+      hello.classList.add("out");
+      setTimeout(() => {
+        hello.lang = greetings[i][0];
+        hello.textContent = greetings[i][1];
+        hello.classList.remove("out", "write");
+        void hello.offsetWidth; // restart the write-on animation
+        hello.classList.add("write");
+      }, 140);
+    };
 
     const show = (i) => {
       if (i === shown) return;
@@ -131,8 +161,9 @@ const loader = {
 
     let value = 0;
     const timer = setInterval(() => {
-      value = Math.min(100, value + 1 + Math.floor(Math.random() * 5));
+      value = Math.min(100, value + 1 + Math.floor(Math.random() * 3));
       count.textContent = value + "%";
+      greet(Math.min(greetings.length - 1, Math.floor((value / 100) * greetings.length)));
 
       for (let i = lines.length - 1; i >= 0; i--) {
         if (value >= lines[i][0]) {
@@ -145,7 +176,7 @@ const loader = {
         clearInterval(timer);
         setTimeout(markReady, 350);
       }
-    }, 90);
+    }, 100);
   },
 };
 
